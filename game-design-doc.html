@@ -1,0 +1,507 @@
+<title>ボクセルフロンティア企画書</title>
+<style>
+  :root{
+    --bg:#EEF0E5;
+    --surface:#FBFBF5;
+    --surface-alt:#E2E6D3;
+    --text:#20241C;
+    --text-muted:#54594A;
+    --accent:#2F6E52;
+    --accent-soft:#D8E7DD;
+    --accent2:#A8791F;
+    --border:#CDD1BC;
+    --code-bg:#26291E;
+    --code-text:#E7E9DC;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14160E;
+      --surface:#1C2015;
+      --surface-alt:#262B1A;
+      --text:#E8EADB;
+      --text-muted:#A7AC96;
+      --accent:#72C199;
+      --accent-soft:#243328;
+      --accent2:#E4B75B;
+      --border:#363B27;
+      --code-bg:#0F110B;
+      --code-text:#DCE0CC;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14160E;
+    --surface:#1C2015;
+    --surface-alt:#262B1A;
+    --text:#E8EADB;
+    --text-muted:#A7AC96;
+    --accent:#72C199;
+    --accent-soft:#243328;
+    --accent2:#E4B75B;
+    --border:#363B27;
+    --code-bg:#0F110B;
+    --code-text:#DCE0CC;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Noto Sans JP","Hiragino Sans",sans-serif;
+    line-height:1.8;
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+  h1,h2,h3,.font-display{
+    font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;
+    text-wrap:balance;
+    letter-spacing:.01em;
+  }
+  .mono{font-family:"JetBrains Mono",monospace;}
+
+  a{color:var(--accent);}
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:240px minmax(0,1fr);
+    gap:48px;
+    padding-block:40px 80px;
+  }
+  @media (max-width:860px){
+    .wrap{grid-template-columns:1fr;}
+    aside{position:static !important;}
+  }
+
+  aside{
+    position:sticky;
+    top:calc(24px + env(safe-area-inset-top,0px));
+    align-self:start;
+    max-height:calc(100vh - 48px);
+    overflow-y:auto;
+  }
+  .toc-title{
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin:0 0 12px;
+  }
+  nav ol{
+    list-style:none;
+    margin:0;
+    padding:0;
+    counter-reset:toc;
+    border-left:1px solid var(--border);
+  }
+  nav li{counter-increment:toc;}
+  nav a{
+    display:block;
+    padding:7px 0 7px 16px;
+    margin-left:-1px;
+    border-left:2px solid transparent;
+    color:var(--text-muted);
+    text-decoration:none;
+    font-size:13.5px;
+    transition:color .15s, border-color .15s;
+  }
+  nav a::before{
+    content:counter(toc,decimal-leading-zero) " ";
+    font-family:"JetBrains Mono",monospace;
+    color:var(--accent2);
+    margin-right:6px;
+    font-size:11px;
+  }
+  nav a:hover{color:var(--text);}
+  nav a.active{
+    color:var(--text);
+    border-left-color:var(--accent);
+    font-weight:700;
+  }
+
+  header.hero{
+    grid-column:1/-1;
+    border-bottom:1px solid var(--border);
+    padding-bottom:28px;
+    margin-bottom:8px;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--accent2);
+    font-weight:700;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(28px,4vw,44px);
+    margin:0 0 12px;
+    font-weight:900;
+  }
+  .lede{
+    color:var(--text-muted);
+    font-size:16px;
+    max-width:60ch;
+    margin:0 0 20px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .chip{
+    font-size:12px;
+    padding:5px 12px;
+    border-radius:999px;
+    background:var(--surface-alt);
+    border:1px solid var(--border);
+    color:var(--text-muted);
+  }
+  .chip b{color:var(--text);font-weight:700;}
+
+  main{min-width:0;}
+  section{
+    padding-block:36px;
+    border-bottom:1px solid var(--border);
+    scroll-margin-top:24px;
+  }
+  section:last-child{border-bottom:none;}
+  .sec-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:18px;
+  }
+  .sec-num{
+    font-family:"JetBrains Mono",monospace;
+    color:var(--accent2);
+    font-size:14px;
+    font-weight:700;
+  }
+  h2{
+    font-size:24px;
+    margin:0;
+    font-weight:800;
+  }
+  h3{
+    font-size:16px;
+    margin:28px 0 10px;
+    font-weight:700;
+    color:var(--accent);
+  }
+  p{margin:0 0 14px; max-width:70ch;}
+  ul,ol.plain{margin:0 0 14px; padding-left:22px;}
+  li{margin-bottom:6px;}
+
+  .callout{
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-left:4px solid var(--accent);
+    border-radius:6px;
+    padding:14px 18px;
+    margin:16px 0;
+    font-size:14.5px;
+  }
+  .callout b{color:var(--accent);}
+
+  .grid-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:14px;
+    margin:18px 0;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .card .k{
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:6px;
+  }
+  .card .v{font-weight:700; font-size:15px;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:18px 0;
+    font-size:14px;
+  }
+  th,td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  th{
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    color:var(--text-muted);
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:.04em;
+  }
+  td.mono, th.mono{font-family:"JetBrains Mono",monospace; font-size:13px;}
+  .table-wrap{overflow-x:auto;}
+
+  figure{margin:22px 0;}
+  figure svg{width:100%;height:auto;display:block;}
+  figcaption{
+    font-size:13px;
+    color:var(--text-muted);
+    margin-top:10px;
+    max-width:70ch;
+  }
+
+  .status-pill{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:999px;
+  }
+  .status-done{background:var(--accent-soft); color:var(--accent);}
+  .status-next{background:var(--surface-alt); color:var(--accent2); border:1px solid var(--border);}
+
+  .timeline{border-left:2px solid var(--border); margin-left:6px; padding-left:22px;}
+  .t-item{position:relative; padding-bottom:22px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{
+    content:"";
+    position:absolute;
+    left:-27.5px;
+    top:4px;
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--bg);
+    border:2px solid var(--accent);
+  }
+  .t-item.done::before{background:var(--accent);}
+  .t-item h4{margin:0 0 4px; font-size:14.5px; font-weight:700;}
+
+  footer{
+    grid-column:1/-1;
+    padding-top:28px;
+    color:var(--text-muted);
+    font-size:12.5px;
+  }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Game Design Document · Draft v0.2</p>
+    <h1>ボクセルフロンティア 企画書</h1>
+    <p class="lede">個人開発によるMinecraft風3Dボクセルサバイバルゲーム。専有サーバーを持たず、プレイヤー同士が直接つながって遊べるマルチプレイを軸に据える。</p>
+    <div class="meta-row">
+      <span class="chip">作成日 <b>2026-09-20</b></span>
+      <span class="chip">対象機種 <b>Windows 11 / Linux aarch64(PGX)</b></span>
+      <span class="chip">技術基盤 <b>Java + LWJGL 3 + Gradle</b></span>
+      <span class="chip">開発形態 <b>個人開発</b></span>
+    </div>
+  </header>
+
+  <aside>
+    <p class="toc-title">目次</p>
+    <nav>
+      <ol>
+        <li><a href="#concept">コンセプト</a></li>
+        <li><a href="#target">ジャンル・想定プレイヤー</a></li>
+        <li><a href="#gameplay">コアゲームプレイ</a></li>
+        <li><a href="#multiplay">マルチプレイヤー仕様</a></li>
+        <li><a href="#tech">技術仕様・対象機種</a></li>
+        <li><a href="#art">アート・世界観</a></li>
+        <li><a href="#milestone">開発マイルストーン</a></li>
+        <li><a href="#risk">リスクと対策</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main>
+
+    <section id="concept">
+      <div class="sec-head"><span class="sec-num">01</span><h2>コンセプト</h2></div>
+      <p>地形をブロック単位(ボクセル)で自由に破壊・設置できる、探索とサバイバルを軸にした3Dゲーム。本家Minecraftと同様にLWJGL(OpenGL低レベルバインディング)を採用し、チャンク描画やシェーダーを自前実装することで、既存エンジンに頼らない技術理解を開発目標の一つとする。</p>
+      <div class="callout"><b>一言で言うと:</b> 「友人のPCに直接つないで、専用サーバーを立てずに一緒に世界を掘る」ボクセルサバイバル。</div>
+    </section>
+
+    <section id="target">
+      <div class="sec-head"><span class="sec-num">02</span><h2>ジャンル・想定プレイヤー</h2></div>
+      <div class="grid-cards">
+        <div class="card"><div class="k">ジャンル</div><div class="v">サンドボックス / サバイバル</div></div>
+        <div class="card"><div class="k">視点</div><div class="v">三人称・一人称切替(予定)</div></div>
+        <div class="card"><div class="k">プレイ人数</div><div class="v">1〜数名の少人数協力プレイ</div></div>
+        <div class="card"><div class="k">想定プレイヤー</div><div class="v">ボクセル/クラフト系が好きな層、友人・家族との協力プレイ志向</div></div>
+      </div>
+      <p>大規模な不特定多数向けオンラインゲームは狙わず、身内・少人数で気軽に集まって遊べる規模感を優先する。</p>
+    </section>
+
+    <section id="gameplay">
+      <div class="sec-head"><span class="sec-num">03</span><h2>コアゲームプレイ</h2></div>
+      <h3>ワールド生成</h3>
+      <p>チャンク単位(例: 16×16×256ブロック)で地形を分割生成し、視界範囲のチャンクのみを描画・処理するストリーミング方式を採る。</p>
+      <h3>ブロックの設置・破壊</h3>
+      <p>視線先のブロックをレイキャストで判定し、破壊・設置を行う基本操作。素材の採取からクラフト、拠点構築までを繋げる。</p>
+      <h3>探索・サバイバル要素</h3>
+      <ul>
+        <li>昼夜サイクルと簡易的な生存要素(体力・満腹度など)</li>
+        <li>地形・地下資源の探索によるクラフト素材集め</li>
+        <li>拠点構築による安全地帯の確保</li>
+      </ul>
+    </section>
+
+    <section id="multiplay">
+      <div class="sec-head"><span class="sec-num">04</span><h2>マルチプレイヤー仕様</h2></div>
+      <p>複数端末での協力プレイに対応するが、<b>常時稼働の専有サーバーは持たない</b>。プレイヤーの1人が自分のゲームクライアント上でワールドをホストし、他のプレイヤーはそのホストへ直接接続する「ホスト型(リスンサーバー)」方式を採用する。</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="専有サーバー方式とホスト型P2P方式の比較図。専有サーバー方式は常時稼働のサーバーに3台のクライアントが接続する構成。ホスト型方式はホストとなるクライアント1台に他2台が直接接続し、専有サーバーが存在しない構成。">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <text x="170" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">不採用: 専有サーバー方式</text>
+          <text x="545" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">採用: ホスト型(リスンサーバー)方式</text>
+
+          <line x1="360" y1="20" x2="360" y2="280" stroke="currentColor" stroke-opacity="0.25" stroke-dasharray="4 5"/>
+
+          <rect x="115" y="52" width="110" height="42" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="170" y="70" text-anchor="middle" font-size="12" fill="currentColor">専有サーバー</text>
+          <text x="170" y="85" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.7">常時稼働・維持費</text>
+
+          <circle cx="60" cy="230" r="24" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="60" y="235" text-anchor="middle" font-size="12" fill="currentColor">A</text>
+          <circle cx="170" cy="230" r="24" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="170" y="235" text-anchor="middle" font-size="12" fill="currentColor">B</text>
+          <circle cx="280" cy="230" r="24" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="280" y="235" text-anchor="middle" font-size="12" fill="currentColor">C</text>
+
+          <line x1="60" y1="206" x2="150" y2="98" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow)"/>
+          <line x1="170" y1="206" x2="170" y2="98" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow)"/>
+          <line x1="280" y1="206" x2="190" y2="98" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow)"/>
+
+          <circle cx="545" cy="150" r="32" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+          <text x="545" y="147" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">A</text>
+          <text x="545" y="161" text-anchor="middle" font-size="9.5" fill="currentColor">ホスト</text>
+
+          <circle cx="450" cy="248" r="24" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="450" y="253" text-anchor="middle" font-size="12" fill="currentColor">B</text>
+          <circle cx="640" cy="248" r="24" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="640" y="253" text-anchor="middle" font-size="12" fill="currentColor">C</text>
+
+          <line x1="466" y1="228" x2="522" y2="172" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow)"/>
+          <line x1="624" y1="228" x2="568" y2="172" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrow)"/>
+
+          <text x="545" y="288" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">専有サーバー機は存在しない</text>
+        </svg>
+        <figcaption>左: 常時稼働のサーバーを別途用意し全員がそこに接続する方式(不採用、維持費・運用が発生)。右: 本企画で採用する方式。プレイヤーAのクライアントがホストを兼ね、BとCはAへ直接接続する。ホストAがセッションを終了すると全員のプレイが終了する制約はあるが、専有サーバー機を用意する必要がない。</figcaption>
+      </figure>
+
+      <h3>接続方法</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>方式</th><th>用途</th><th>備考</th></tr>
+          <tr><td>LAN内自動検出</td><td>同一ネットワーク内の友人と手軽に接続</td><td>UDPブロードキャストでホストを探索</td></tr>
+          <tr><td>IPアドレス直接指定</td><td>インターネット越しの接続</td><td>ホスト側でポート開放 or UPnP自動マッピングを試行</td></tr>
+        </table>
+      </div>
+
+      <h3>技術的な要点</h3>
+      <ul>
+        <li>ホストのクライアントプロセスがワールドの権威(authoritative)状態を保持し、ゲームロジック兼サーバーとして動作する。</li>
+        <li>他プレイヤーはクライアントとしてホストに接続し、入力送信と状態受信のみを行う。</li>
+        <li>インターネット越し接続時のNAT越えはUPnPを第一候補とし、失敗時は手動ポート開放を案内する(専有の中継サーバーは置かない)。</li>
+        <li>ホスト移行(ホスト交代)機能は初期スコープ外。ホスト離脱時はセッション終了とする。</li>
+      </ul>
+    </section>
+
+    <section id="tech">
+      <div class="sec-head"><span class="sec-num">05</span><h2>技術仕様・対象機種</h2></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>項目</th><th class="mono">Windows 11 PC</th><th class="mono">PGX (DGX Spark姉妹機)</th></tr>
+          <tr><td>OS / アーキテクチャ</td><td class="mono">Windows 11, x64</td><td class="mono">Linux, aarch64 (Grace CPU系)</td></tr>
+          <tr><td>ランタイム</td><td class="mono">Temurin JDK 21 LTS</td><td class="mono">Temurin JDK 21 LTS</td></tr>
+          <tr><td>ビルド</td><td class="mono">Gradle</td><td class="mono">Gradle</td></tr>
+          <tr><td>グラフィックス</td><td class="mono">LWJGL 3 + OpenGL, natives-windows</td><td class="mono">LWJGL 3 + OpenGL, natives-linux-arm64</td></tr>
+        </table>
+      </div>
+      <p>単一のGradleプロジェクトで両機種向けビルドを行い、LWJGLのnative依存をプラットフォームごとに振り分ける構成とする。</p>
+      <h3>ネットワーク層</h3>
+      <p>Java標準のソケットAPI(TCP)を基本とし、必要に応じてNettyの導入を検討する。プロトコルはホスト権威のクライアント/サーバーモデルとし、外部の常設インフラを前提としない。</p>
+    </section>
+
+    <section id="art">
+      <div class="sec-head"><span class="sec-num">06</span><h2>アート・世界観</h2></div>
+      <p>立方体ボクセルによる幾何学的な造形を基本スタイルとし、テクスチャは簡易なピクセルアートを想定。派手な演出よりも、地形の起伏や採掘・建築のプロセス自体を楽しませることを重視する。世界観の詳細(地形バイオーム、モンスター等)は今後の企画で肉付けする。</p>
+    </section>
+
+    <section id="milestone">
+      <div class="sec-head"><span class="sec-num">07</span><h2>開発マイルストーン</h2></div>
+      <div class="timeline">
+        <div class="t-item done">
+          <span class="status-pill status-done">完了</span>
+          <h4>開発環境構築ガイド作成</h4>
+          <p>Windows / Linux aarch64 双方向けのJDK・Gradle手動インストール手順をまとめ済み。</p>
+        </div>
+        <div class="t-item">
+          <span class="status-pill status-next">次に着手</span>
+          <h4>Gradleプロジェクト雛形 + Hello Triangle</h4>
+          <p>build.gradleにLWJGL依存とnatives振り分けを設定し、GLFW+OpenGLで三角形を描画するところまでを最初の技術検証とする。</p>
+        </div>
+        <div class="t-item">
+          <h4>チャンク描画・ワールド生成の実装</h4>
+          <p>ボクセルデータ構造とチャンク単位のメッシュ生成・描画パイプラインを構築。</p>
+        </div>
+        <div class="t-item">
+          <h4>ブロック設置・破壊とプレイヤー操作</h4>
+        </div>
+        <div class="t-item">
+          <h4>マルチプレイ(ホスト型)実装</h4>
+          <p>LAN内接続を先に実装し、その後インターネット越し接続(UPnP)に対応する。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="risk">
+      <div class="sec-head"><span class="sec-num">08</span><h2>リスクと対策</h2></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>リスク</th><th>対策</th></tr>
+          <tr><td>NAT越えに失敗し、インターネット越し接続ができない</td><td>UPnP自動設定を第一候補とし、失敗時は手動ポート開放手順を案内するフォールバックを用意</td></tr>
+          <tr><td>Windows / Linux aarch64間でのビルド・native差異による不具合</td><td>両機種での動作確認を各マイルストーンごとに実施</td></tr>
+          <tr><td>ホスト離脱でセッションが終了する仕様への不満</td><td>初期スコープでは許容し、需要が高まった場合にホスト移行機能を検討</td></tr>
+          <tr><td>自前実装によるチャンク描画のパフォーマンス不足</td><td>視界範囲チャンクのみ描画するストリーミング方式とメッシュ最適化を初期から設計に組み込む</td></tr>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>ボクセルフロンティア企画書 · Draft v0.2 · 2026-09-20</footer>
+</div>
+
+<script>
+(function(){
+  try{
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+    function onScroll(){
+      var pos = window.scrollY + 120;
+      var current = 0;
+      for(var i=0;i<sections.length;i++){
+        if(sections[i] && sections[i].offsetTop <= pos) current = i;
+      }
+      links.forEach(function(a,i){ a.classList.toggle('active', i===current); });
+    }
+    document.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  }catch(e){}
+})();
+</script>

@@ -1,0 +1,540 @@
+<title>Java開発環境構築</title>
+<style>
+:root{
+  --bg:#eef0ea;
+  --surface:#ffffff;
+  --ink:#1b1f1c;
+  --muted:#5b6460;
+  --border:#d8dcd0;
+  --accent:#a8721f;
+  --accent-ink:#ffffff;
+  --code-bg:#1b1f1c;
+  --code-ink:#e8e6df;
+  --code-muted:#8b9188;
+  --success:#3f8f5f;
+  --success-bg:#e6f2ea;
+  --danger:#b64a3a;
+  --danger-bg:#faeae7;
+  --shadow: 0 1px 2px rgba(20,20,15,0.06), 0 8px 24px rgba(20,20,15,0.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171a;
+    --surface:#1b1f23;
+    --ink:#e7e5df;
+    --muted:#93998f;
+    --border:#2c3136;
+    --accent:#d9a44f;
+    --accent-ink:#14171a;
+    --code-bg:#0d0f11;
+    --code-ink:#d8dcd4;
+    --code-muted:#767c74;
+    --success:#6bbf8a;
+    --success-bg:#16241c;
+    --danger:#d97a67;
+    --danger-bg:#2a1a17;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171a;
+  --surface:#1b1f23;
+  --ink:#e7e5df;
+  --muted:#93998f;
+  --border:#2c3136;
+  --accent:#d9a44f;
+  --accent-ink:#14171a;
+  --code-bg:#0d0f11;
+  --code-ink:#d8dcd4;
+  --code-muted:#767c74;
+  --success:#6bbf8a;
+  --success-bg:#16241c;
+  --danger:#d97a67;
+  --danger-bg:#2a1a17;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  line-height:1.65;
+  padding-inline:16px;
+}
+a{color:var(--accent);}
+h1,h2,h3{font-family:"IBM Plex Sans",sans-serif;text-wrap:balance;letter-spacing:-0.01em;}
+code, pre, .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;}
+
+.page{
+  max-width:920px;
+  margin:0 auto;
+  padding-block:40px 80px;
+}
+
+.masthead{
+  margin-bottom:36px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12.5px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:10px;
+}
+h1{
+  font-size:clamp(26px,4vw,38px);
+  font-weight:650;
+  margin:0 0 12px;
+}
+.lede{
+  color:var(--muted);
+  font-size:16px;
+  max-width:60ch;
+  margin:0;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:200px 1fr;
+  gap:36px;
+  align-items:start;
+}
+@media (max-width:760px){
+  .layout{grid-template-columns:1fr;}
+  nav.steps{
+    position:static;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding-bottom:4px;
+  }
+  nav.steps a{white-space:nowrap;}
+}
+
+nav.steps{
+  position:sticky;
+  top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+nav.steps a{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  padding:7px 10px;
+  border-radius:8px;
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13.5px;
+}
+nav.steps a:hover{background:var(--surface);color:var(--ink);}
+nav.steps a .n{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;
+  color:var(--accent);
+}
+
+main{display:flex;flex-direction:column;gap:28px;min-width:0;}
+
+section.step{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:26px 28px;
+  box-shadow:var(--shadow);
+  scroll-margin-top:20px;
+}
+.step-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:6px;
+}
+.step-badge{
+  width:28px;height:28px;flex:none;
+  border-radius:8px;
+  background:var(--accent);
+  color:var(--accent-ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:13px;font-weight:600;
+}
+.step-head h2{font-size:19px;margin:0;font-weight:650;}
+.step-sub{color:var(--muted);font-size:14px;margin:4px 0 16px;}
+
+.codeblock{
+  position:relative;
+  background:var(--code-bg);
+  color:var(--code-ink);
+  border-radius:10px;
+  padding:14px 16px;
+  font-size:13px;
+  overflow-x:auto;
+  margin:12px 0;
+}
+.codeblock pre{margin:0;white-space:pre;}
+.codeblock .copy{
+  position:absolute;top:8px;right:8px;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;
+  color:var(--code-muted);
+  background:transparent;
+  border:1px solid var(--code-muted);
+  border-radius:6px;
+  padding:3px 8px;
+  cursor:pointer;
+}
+.codeblock .copy:hover{color:var(--code-ink);border-color:var(--code-ink);}
+.codeblock .copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+ol.tasks, ul.tasks{margin:10px 0;padding-left:22px;}
+ol.tasks li, ul.tasks li{margin-bottom:8px;}
+
+.callout{
+  display:flex;gap:10px;
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:13.5px;
+  margin:14px 0;
+  border:1px solid var(--border);
+}
+.callout.tip{background:var(--success-bg);border-color:transparent;}
+.callout.tip .tag{color:var(--success);}
+.callout.warn{background:var(--danger-bg);border-color:transparent;}
+.callout.warn .tag{color:var(--danger);}
+.callout .tag{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11px;text-transform:uppercase;letter-spacing:0.05em;
+  flex:none;padding-top:2px;
+}
+.callout p{margin:0;}
+
+.expect{
+  border-left:3px solid var(--success);
+  padding:8px 12px;
+  background:var(--surface);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12.5px;
+  color:var(--muted);
+  margin-top:8px;
+  border-radius:0 6px 6px 0;
+}
+.expect b{color:var(--success);font-family:inherit;}
+
+table.pathtable{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0;}
+table.pathtable th,table.pathtable td{border:1px solid var(--border);padding:8px 10px;text-align:left;}
+table.pathtable th{background:var(--bg);font-weight:600;font-size:12.5px;color:var(--muted);}
+
+footer.next{
+  background:var(--surface);
+  border:1px dashed var(--border);
+  border-radius:14px;
+  padding:24px 28px;
+}
+footer.next h2{font-size:17px;margin:0 0 8px;}
+footer.next p{color:var(--muted);font-size:14px;margin:0 0 4px;}
+footer.next ol{margin:10px 0 0;padding-left:20px;font-size:14px;}
+footer.next ol li{margin-bottom:4px;}
+
+.kbd{
+  font-family:"IBM Plex Mono",monospace;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:5px;
+  padding:1px 6px;
+  font-size:12.5px;
+}
+
+.osswitch{
+  display:inline-flex;
+  gap:2px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:3px;
+  margin-top:16px;
+}
+.osswitch button{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12.5px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  padding:7px 14px;
+  border-radius:7px;
+  cursor:pointer;
+}
+.osswitch button.active{
+  background:var(--surface);
+  color:var(--ink);
+  box-shadow:var(--shadow);
+}
+.osswitch button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+.page[data-os="windows"] .os-linux{display:none;}
+.page[data-os="linux"] .os-win{display:none;}
+.arch-note{
+  border-left:3px solid var(--accent);
+  padding:8px 12px;
+  background:var(--bg);
+  font-size:13px;
+  color:var(--muted);
+  margin:12px 0;
+  border-radius:0 6px 6px 0;
+}
+.arch-note b{color:var(--ink);}
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;650&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<div class="page">
+
+  <div class="masthead">
+    <div class="eyebrow">LWJGL ボクセルゲーム開発 · 準備編</div>
+    <h1>Java開発環境セットアップ</h1>
+    <p class="lede">LWJGL + Gradle で Minecraft 風の3Dゲームを作るための手動インストール手順。Windows 11のメインPCと、DGX Spark / PGX（Linux, aarch64）の両方をカバーする。上から順に進めれば、コマンド一つで検証しながら環境が整う。</p>
+    <div class="osswitch" role="group" aria-label="対象OS">
+      <button type="button" data-os-btn="windows" class="active">Windows 11</button>
+      <button type="button" data-os-btn="linux">Linux（DGX Spark / PGX）</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="steps">
+      <a href="#step1"><span class="n">01</span>JDKの入手</a>
+      <a href="#step2"><span class="n">02</span>JDKの確認</a>
+      <a href="#step3"><span class="n">03</span>Gradleの入手</a>
+      <a href="#step4"><span class="n">04</span>Gradleの確認</a>
+      <a href="#step5"><span class="n">05</span>エディタ</a>
+      <a href="#step6"><span class="n">06</span>次のステップ</a>
+    </nav>
+
+    <main>
+
+      <section class="step" id="step1">
+        <div class="step-head">
+          <div class="step-badge">1</div>
+          <h2>JDKをインストールする</h2>
+        </div>
+        <p class="step-sub">配布元は Eclipse Temurin（旧 AdoptOpenJDK）。LTS版の <b>JDK 21</b> を選ぶ。</p>
+
+        <div class="os-win">
+        <ol class="tasks">
+          <li><code>adoptium.net</code> にアクセスする。</li>
+          <li>OS: <b>Windows</b>、Architecture: <b>x64</b>、Version: <b>21 - LTS</b>、Package Type: <b>JDK</b> を選び、<code>.msi</code> インストーラーをダウンロードする。</li>
+          <li>ダウンロードした <code>.msi</code> を実行する。</li>
+          <li>「Custom Setup」画面が出たら、次の2項目を必ず<b>有効</b>にする（初期状態で無効になっていることがある）。</li>
+        </ol>
+
+        <table class="pathtable">
+          <tr><th>オプション</th><th>設定</th></tr>
+          <tr><td>Set JAVA_HOME variable</td><td>Will be installed on local hard drive（有効化する）</td></tr>
+          <tr><td>Add to PATH</td><td>Will be installed on local hard drive（有効化する）</td></tr>
+        </table>
+
+        <div class="callout tip">
+          <span class="tag">Tip</span>
+          <p>この2つを有効にしておけば、後で環境変数を手動編集する必要がなくなる。インストーラーの指示通り進めれば完了。</p>
+        </div>
+        </div>
+
+        <div class="os-linux">
+        <p>DGX Spark / PGX は Grace CPU 系の <b>aarch64（ARM64）</b> 機であり、通常のx86_64向けPCとはバイナリの種類が異なる。まずアーキテクチャを確認する。</p>
+
+        <div class="codeblock">
+          <button class="copy" data-copy="uname -m">Copy</button>
+          <pre>uname -m</pre>
+        </div>
+        <div class="expect"><b>期待される出力</b><br>aarch64</div>
+
+        <div class="arch-note"><b>重要:</b> 以降、JDK・Gradle・（将来の）LWJGLネイティブライブラリは、Windows機では<b>x64</b>、DGX Spark / PGXでは<b>aarch64 / arm64</b>版を選ぶ。同じプロジェクトでも機種ごとに取得するバイナリの種類が変わる点に注意。</div>
+
+        <ol class="tasks">
+          <li><code>adoptium.net</code> にアクセスし、OS: <b>Linux</b>、Architecture: <b>aarch64</b>、Version: <b>21 - LTS</b>、Package Type: <b>JDK</b>、Type: <b>.tar.gz</b> を選んでダウンロードする。</li>
+          <li>ターミナルで <code>/opt</code> 配下に展開する。</li>
+        </ol>
+
+        <div class="codeblock">
+          <button class="copy" data-copy="sudo mkdir -p /opt/temurin21&#10;sudo tar -xzf ~/Downloads/OpenJDK21U-jdk_aarch64_linux_hotspot_*.tar.gz -C /opt/temurin21 --strip-components=1">Copy</button>
+          <pre>sudo mkdir -p /opt/temurin21
+sudo tar -xzf ~/Downloads/OpenJDK21U-jdk_aarch64_linux_hotspot_*.tar.gz \
+  -C /opt/temurin21 --strip-components=1</pre>
+        </div>
+
+        <ol class="tasks" start="3">
+          <li><code>~/.bashrc</code>（zshなら <code>~/.zshrc</code>）の末尾に <code>JAVA_HOME</code> と <code>PATH</code> を追記する。</li>
+        </ol>
+
+        <div class="codeblock">
+          <button class="copy" data-copy="echo 'export JAVA_HOME=/opt/temurin21' >> ~/.bashrc&#10;echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.bashrc&#10;source ~/.bashrc">Copy</button>
+          <pre>echo 'export JAVA_HOME=/opt/temurin21' >> ~/.bashrc
+echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc</pre>
+        </div>
+
+        <div class="callout tip">
+          <span class="tag">Tip</span>
+          <p>複数ユーザーで使う機種なら <code>~/.bashrc</code> の代わりに <code>/etc/profile.d/temurin21.sh</code> に同じ2行を書いて <code>sudo chmod +x</code> しておくと全ユーザーに反映される。</p>
+        </div>
+        </div>
+      </section>
+
+      <section class="step" id="step2">
+        <div class="step-head">
+          <div class="step-badge">2</div>
+          <h2>JDKの動作確認</h2>
+        </div>
+        <p class="step-sub os-win">インストール後は必ず<b>新しいPowerShellウィンドウ</b>を開き直すこと。既存のウィンドウはPATHの更新を反映しない。</p>
+        <p class="step-sub os-linux">同じターミナルで続けて構わない（<code>source ~/.bashrc</code> 済みのため）。新しいターミナルを開いた場合は自動的に反映される。</p>
+
+        <div class="codeblock">
+          <button class="copy" data-copy="java -version&#10;javac -version">Copy</button>
+          <pre>java -version
+javac -version</pre>
+        </div>
+
+        <div class="expect"><b>期待される出力例</b><br>openjdk version "21.0.x" ...<br>javac 21.0.x</div>
+
+        <div class="callout warn os-win">
+          <span class="tag">つまずいたら</span>
+          <p><code>'java' は認識されていません</code> と出る場合、(1) PowerShellを新規に開き直したか、(2) PC自体を再起動する必要がある場合がある、を確認する。それでも直らなければ「システム環境変数の編集」→「環境変数」で <span class="kbd">Path</span> に JDKの <code>bin</code> フォルダ（例: <code>C:\Program Files\Eclipse Adoptium\jdk-21.x.x-hotspot\bin</code>）が入っているか目視で確認する。</p>
+        </div>
+
+        <div class="callout warn os-linux">
+          <span class="tag">つまずいたら</span>
+          <p><code>command not found: java</code> と出る場合、<code>echo $JAVA_HOME</code> と <code>cat ~/.bashrc | grep JAVA_HOME</code> で追記が反映されているか確認する。ログインシェルが bash 以外（zsh等）の場合は該当する設定ファイル（<code>~/.zshrc</code>）に書いたか見直す。</p>
+        </div>
+      </section>
+
+      <section class="step" id="step3">
+        <div class="step-head">
+          <div class="step-badge">3</div>
+          <h2>Gradleをインストールする</h2>
+        </div>
+        <p class="step-sub">GradleはZIPを展開してPATHを通すだけ。インストーラーは無い。Gradle自体は純Java製なのでOSやCPUアーキテクチャを問わず同じZIPが使える。</p>
+
+        <div class="os-win">
+        <ol class="tasks">
+          <li><code>gradle.org/releases</code> から最新の <b>Binary-only</b> ZIP（例: <code>gradle-8.x-bin.zip</code>）をダウンロードする。</li>
+          <li>ZIPを <code>C:\Gradle\gradle-8.x</code> に展開する（パスにスペースや日本語を含めない。作業フォルダが「ゲーム製作所」配下だと問題が起きやすいため、Gradle本体は別の英数字パスに置く）。</li>
+          <li>スタートメニューで「環境変数を編集」と検索し、「ユーザー環境変数」の <span class="kbd">Path</span> を選択して「編集」→「新規」。</li>
+          <li><code>C:\Gradle\gradle-8.x\bin</code> を追加してOKで閉じる。</li>
+        </ol>
+        </div>
+
+        <div class="os-linux">
+        <ol class="tasks">
+          <li><code>gradle.org/releases</code> から同じバージョンの <b>Binary-only</b> ZIP（例: <code>gradle-8.x-bin.zip</code>）をダウンロードする（Windows側と揃えておくとチーム内で挙動差が出ない）。</li>
+          <li><code>/opt</code> に展開し、PATHに追記する。</li>
+        </ol>
+
+        <div class="codeblock">
+          <button class="copy" data-copy="sudo unzip -d /opt/gradle ~/Downloads/gradle-8.*-bin.zip&#10;echo 'export PATH=/opt/gradle/gradle-8.*/bin:$PATH' >> ~/.bashrc&#10;source ~/.bashrc">Copy</button>
+          <pre>sudo unzip -d /opt/gradle ~/Downloads/gradle-8.*-bin.zip
+echo 'export PATH=/opt/gradle/gradle-8.*/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc</pre>
+        </div>
+
+        <div class="callout tip">
+          <span class="tag">Tip</span>
+          <p><code>unzip</code> が無い場合は <code>sudo apt install unzip</code> を先に実行する。ワイルドカード（<code>gradle-8.*</code>）はバージョン番号を毎回打たなくて済むようにしているだけなので、実際に展開されたフォルダ名に合わせて確認しておく。</p>
+        </div>
+        </div>
+
+        <div class="callout tip">
+          <span class="tag">なぜ必要か</span>
+          <p>プロジェクト自体には後で Gradle Wrapper（<code>gradlew</code>）を同梱するので、完成後は各機種にGradle本体が無くてもビルドできる。今インストールするのは、プロジェクトを最初に作る作業とIDE連携のため。</p>
+        </div>
+      </section>
+
+      <section class="step" id="step4">
+        <div class="step-head">
+          <div class="step-badge">4</div>
+          <h2>Gradleの動作確認</h2>
+        </div>
+        <p class="step-sub os-win">こちらも新しいPowerShellウィンドウで実行する。</p>
+        <p class="step-sub os-linux">同じターミナルでよい。</p>
+
+        <div class="codeblock">
+          <button class="copy" data-copy="gradle -v">Copy</button>
+          <pre>gradle -v</pre>
+        </div>
+
+        <div class="expect os-win"><b>期待される出力</b><br>------------------------------------------------------------<br>Gradle 8.x<br>------------------------------------------------------------<br>...<br>JVM: 21.0.x (Eclipse Adoptium ...)</div>
+        <div class="expect os-linux"><b>期待される出力</b><br>------------------------------------------------------------<br>Gradle 8.x<br>------------------------------------------------------------<br>...<br>JVM: 21.0.x (Eclipse Adoptium ...)<br>OS: Linux ... aarch64</div>
+
+        <div class="callout warn os-win">
+          <span class="tag">つまずいたら</span>
+          <p>Gradleが「JVM」欄で別バージョンのJavaを拾うことがある。複数JDKが入っている場合は環境変数 <span class="kbd">JAVA_HOME</span> がTemurin 21を指しているか <code>echo $env:JAVA_HOME</code> で確認する。</p>
+        </div>
+
+        <div class="callout warn os-linux">
+          <span class="tag">つまずいたら</span>
+          <p>出力末尾の「OS:」行が <code>aarch64</code> になっているか確認する。もし <code>x86_64</code> と出た場合、誤ってx86_64向けの見慣れたコマンドやDockerイメージ経由で実行している可能性があるので、直接ホストの <code>uname -m</code> と一致するか見直す。</p>
+        </div>
+      </section>
+
+      <section class="step" id="step5">
+        <div class="step-head">
+          <div class="step-badge">5</div>
+          <h2>エディタ（任意）</h2>
+        </div>
+        <p class="step-sub">必須ではないが、Gradle連携とデバッガが揃っている方が3D描画のデバッグが格段に楽になる。</p>
+        <ul class="tasks">
+          <li><b>IntelliJ IDEA Community Edition</b>（無料）— Gradleプロジェクトを開くだけで依存関係を自動解決してくれる。今回のLWJGL構成には最も相性が良い。Windows・Linux（aarch64含む）双方にネイティブビルドがある。</li>
+          <li>VS Code + "Extension Pack for Java" でも代替可能。こちらもLinux ARM64版が公式に配布されている。</li>
+        </ul>
+      </section>
+
+      <footer class="next" id="step6">
+        <h2>次のステップ</h2>
+        <p>ここまでの3つのコマンド（<code>java -version</code> / <code>javac -version</code> / <code>gradle -v</code>）が、Windows機とDGX Spark / PGXの両方で期待通りに表示されたら、環境構築は完了。</p>
+        <div class="arch-note"><b>先取りメモ:</b> 次に作るGradleプロジェクトでは、LWJGLのネイティブライブラリ（<code>lwjgl-natives</code>）をWindowsでは <code>natives-windows</code>、DGX Spark / PGXでは <code>natives-linux-arm64</code> として振り分ける設定を <code>build.gradle</code> に入れる。1つの<code>build.gradle</code>で両機種に対応できるので、機種ごとに設定を書き直す必要はない。</div>
+        <ol>
+          <li>Gradleプロジェクトの雛形を作成（<code>build.gradle</code> に LWJGL 3 のネイティブ依存を設定）</li>
+          <li>GLFWでウィンドウを開き、OpenGLコンテキストを初期化する「Hello Triangle」で描画パイプラインを確認</li>
+          <li>ボクセル1個の描画 → チャンク（16×16×16）描画 → 複数チャンクのワールド生成、の順で拡張</li>
+        </ol>
+        <p style="margin-top:14px;">確認コマンドの結果を教えてもらえれば、続けてプロジェクトの雛形を作成します。</p>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy') || '';
+      var done = function(){
+        var orig = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function(){ btn.textContent = orig; }, 1200);
+      };
+      try{
+        navigator.clipboard.writeText(text).then(done).catch(function(){});
+      }catch(e){}
+    });
+  });
+
+  var page = document.querySelector('.page');
+  var buttons = document.querySelectorAll('[data-os-btn]');
+  function setOs(os){
+    page.setAttribute('data-os', os);
+    buttons.forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-os-btn') === os);
+    });
+    try{ localStorage.setItem('setup-os', os); }catch(e){}
+  }
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ setOs(b.getAttribute('data-os-btn')); });
+  });
+  var saved = 'windows';
+  try{ saved = localStorage.getItem('setup-os') || 'windows'; }catch(e){}
+  setOs(saved);
+})();
+</script>
