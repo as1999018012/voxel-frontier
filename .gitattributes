@@ -1,0 +1,4 @@
+# Linux (PGX) で gradlew を実行できるよう改行コードを固定する
+gradlew     text eol=lf
+*.bat       text eol=crlf
+*.jar       binary

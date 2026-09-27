@@ -294,11 +294,12 @@
 
 <div class="wrap">
   <header class="hero">
-    <p class="eyebrow">Game Design Document · Draft v0.2</p>
+    <p class="eyebrow">Game Design Document · Draft v0.3</p>
     <h1>ボクセルフロンティア 企画書</h1>
     <p class="lede">個人開発によるMinecraft風3Dボクセルサバイバルゲーム。専有サーバーを持たず、プレイヤー同士が直接つながって遊べるマルチプレイを軸に据える。</p>
     <div class="meta-row">
       <span class="chip">作成日 <b>2026-09-20</b></span>
+      <span class="chip">更新日 <b>2026-09-27</b></span>
       <span class="chip">対象機種 <b>Windows 11 / Linux aarch64(PGX)</b></span>
       <span class="chip">技術基盤 <b>Java + LWJGL 3 + Gradle</b></span>
       <span class="chip">開発形態 <b>個人開発</b></span>
@@ -429,12 +430,12 @@
           <tr><td>OS / アーキテクチャ</td><td class="mono">Windows 11, x64</td><td class="mono">Linux, aarch64 (Grace CPU系)</td></tr>
           <tr><td>ランタイム</td><td class="mono">Temurin JDK 21 LTS</td><td class="mono">Temurin JDK 21 LTS</td></tr>
           <tr><td>ビルド</td><td class="mono">Gradle</td><td class="mono">Gradle</td></tr>
-          <tr><td>グラフィックス</td><td class="mono">LWJGL 3 + OpenGL, natives-windows</td><td class="mono">LWJGL 3 + OpenGL, natives-linux-arm64</td></tr>
+          <tr><td>グラフィックス</td><td class="mono">LWJGL 3.4 + OpenGL 3.3, natives-windows</td><td class="mono">LWJGL 3.4 + OpenGL 3.3, natives-linux-arm64</td></tr>
         </table>
       </div>
-      <p>単一のGradleプロジェクトで両機種向けビルドを行い、LWJGLのnative依存をプラットフォームごとに振り分ける構成とする。</p>
+      <p>単一のGradleプロジェクトで両機種向けビルドを行う。LWJGLのnative依存は対象機種すべての分を同梱し、実行時にLWJGLが自機に合うものを自動で選ぶため、どちらの機種でビルドした配布物も両方で動く。</p>
       <h3>ネットワーク層</h3>
-      <p>Java標準のソケットAPI(TCP)を基本とし、必要に応じてNettyの導入を検討する。プロトコルはホスト権威のクライアント/サーバーモデルとし、外部の常設インフラを前提としない。</p>
+      <p>Java標準のソケットAPI(TCP)で実装した。プロトコルはホスト権威のクライアント/サーバーモデルとし、外部の常設インフラを前提としない。地形はシードから各自が再生成するため、通信するのはシードと変更ブロック・プレイヤー位置のみ。これを成り立たせるため、地形生成は機種によらずビット単位で同じ結果になるよう四則演算のみで計算し、自動テストで確認する。</p>
     </section>
 
     <section id="art">
@@ -450,21 +451,30 @@
           <h4>開発環境構築ガイド作成</h4>
           <p>Windows / Linux aarch64 双方向けのJDK・Gradle手動インストール手順をまとめ済み。</p>
         </div>
+        <div class="t-item done">
+          <span class="status-pill status-done">完了</span>
+          <h4>Gradleプロジェクト雛形 + Hello Triangle</h4>
+          <p>LWJGL 3.4 + JOML。natives は Windows / Linux x64 / Linux aarch64 を同梱し、実行時にLWJGLが自動選択する構成とした。</p>
+        </div>
+        <div class="t-item done">
+          <span class="status-pill status-done">完了</span>
+          <h4>チャンク描画・ワールド生成の実装</h4>
+          <p>16×16×256チャンク、別スレッドでの地形生成・メッシュ生成、隠れ面除去、アンビエントオクルージョン、視錐台カリング、霧。地形はPerlinノイズ(山・海・砂浜・洞窟・鉱石・森)で、機種によらず同じ結果になるよう四則演算のみで生成。</p>
+        </div>
+        <div class="t-item done">
+          <span class="status-pill status-done">完了</span>
+          <h4>ブロック設置・破壊とプレイヤー操作</h4>
+          <p>重力・ジャンプ・当たり判定・水泳・飛行、レイキャストによる設置/破壊、ホットバー、昼夜サイクル、ワールドの保存。</p>
+        </div>
+        <div class="t-item done">
+          <span class="status-pill status-done">完了</span>
+          <h4>マルチプレイ(ホスト型)実装</h4>
+          <p>TCPのホスト権威モデル。LAN内自動検出(UDPブロードキャスト)、IP直接指定、UPnPによるポート開放。通信はシードと変更ブロックのみで、地形は各自が再生成する。</p>
+        </div>
         <div class="t-item">
           <span class="status-pill status-next">次に着手</span>
-          <h4>Gradleプロジェクト雛形 + Hello Triangle</h4>
-          <p>build.gradleにLWJGL依存とnatives振り分けを設定し、GLFW+OpenGLで三角形を描画するところまでを最初の技術検証とする。</p>
-        </div>
-        <div class="t-item">
-          <h4>チャンク描画・ワールド生成の実装</h4>
-          <p>ボクセルデータ構造とチャンク単位のメッシュ生成・描画パイプラインを構築。</p>
-        </div>
-        <div class="t-item">
-          <h4>ブロック設置・破壊とプレイヤー操作</h4>
-        </div>
-        <div class="t-item">
-          <h4>マルチプレイ(ホスト型)実装</h4>
-          <p>LAN内接続を先に実装し、その後インターネット越し接続(UPnP)に対応する。</p>
+          <h4>サバイバル要素</h4>
+          <p>体力・満腹度、インベントリとクラフト、モンスター、文字描画(プレイヤー名表示・チャット)。</p>
         </div>
       </div>
     </section>
@@ -484,7 +494,7 @@
 
   </main>
 
-  <footer>ボクセルフロンティア企画書 · Draft v0.2 · 2026-09-20</footer>
+  <footer>ボクセルフロンティア企画書 · Draft v0.3 · 2026-09-27</footer>
 </div>
 
 <script>
