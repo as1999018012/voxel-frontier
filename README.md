@@ -12,7 +12,7 @@ Java + LWJGL 3 (OpenGL 3.3) で作った Minecraft 風のボクセルゲーム�
 ./gradlew run                              # 1人プレイ (Windows は .\gradlew run)
 ./gradlew run --args="--host"              # ホストとして開始
 ./gradlew run --args="--join"              # LAN内のホストを自動で探して参加
-./gradlew run --args="--join 192.168.1.73" # アドレスを指定して参加
+./gradlew run --args="--join 192.168.1.10" # アドレスを指定して参加
 ./gradlew run --args="--help"              # オプション一覧
 ```
 
